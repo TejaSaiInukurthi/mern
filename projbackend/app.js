@@ -1,13 +1,42 @@
+require('dotenv').config();
+
 const mongoose = require('mongoose');
 const express = require("express");
 const app = express();
+const bodyParser =  require("body-parser");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 
-mongoose.connect('mongodb://localhost:27017/test',
- {useNewUrlParser: true});
 
- const port  = 8000;
+const authRoutes = require("./routes/auth"); 
 
- app.listen(port, () => {
+
+//DB connection
+mongoose.connect(process.env.DATABASE,
+ {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true
+}).then(() => {
+    console.log("DB CONNECTED");
+});
+
+//My routes
+app.use("/api", authRoutes);
+
+
+//Middle wares
+app.use(bodyParser.json());
+app.use(cookieParser());
+app.use(cors());
+
+ 
+//port
+const port  = process.env.PORT || 8000;
+
+
+//starting a server
+app.listen(port, () => {
      console.log(`app is runninng at ${port}`);
  });
